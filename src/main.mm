@@ -67,10 +67,10 @@ static void setupDisplayLink() {
         newLink.preferredFramesPerSecond = 120;
     }
 
+    object_setIvar(caller, ivar, newLink);
+
     [newLink addToRunLoop:[NSRunLoop currentRunLoop]
                   forMode:NSRunLoopCommonModes];
-
-    object_setIvar(caller, ivar, newLink);
 
     log::info("duration: {}, refresh rate: {}", (float)link.duration, (long)[UIScreen mainScreen].maximumFramesPerSecond);
 }
