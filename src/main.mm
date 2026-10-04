@@ -39,6 +39,23 @@ static BOOL isPaused_h(id self, SEL sel) {
     return NO;
 }
 
+static void (*setHighFrameRateReasons_o)(id, SEL, void*, NSUInteger);
+
+static void setHighFrameRateReasons_h(
+    id self,
+    SEL sel,
+    void* reasons,
+    NSUInteger count
+) {
+    log::info(
+        "setHighFrameRateReasons reasons={} count={}",
+        reasons,
+        count
+    );
+
+    //setHighFrameRateReasons_o(self, sel, reasons, count);
+}
+
 static void swizzleNSBundle() {
     auto cls = [NSBundle class];
 
@@ -57,6 +74,10 @@ static void swizzleCADynamicFrameRateSource() {
     auto method2 = class_getInstanceMethod(cls, @selector(isPaused));
     isPaused_o = (BOOL (*)(id, SEL))method_getImplementation(method2);
     method_setImplementation(method2, (IMP)isPaused_h);
+
+    auto method3 = class_getInstanceMethod(cls, @selector(setHighFrameRateReasons:count:));
+    setReasons_o =(void (*)(id, SEL, void*, NSUInteger))method_getImplementation(method);
+    method_setImplementation(method, (IMP)setReasons_h);
 }
 
 static CADisplayLink* newLink = nullptr;
