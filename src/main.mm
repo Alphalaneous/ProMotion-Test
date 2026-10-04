@@ -72,7 +72,7 @@ static void setupDisplayLink() {
     [newLink addToRunLoop:[NSRunLoop currentRunLoop]
                   forMode:NSRunLoopCommonModes];
 
-    log::info("duration: {}, refresh rate: {}", (float)link.duration, (long)[UIScreen mainScreen].maximumFramesPerSecond);
+    log::info("duration: {}, refresh rate: {}", (float)newLink.duration, (long)[UIScreen mainScreen].maximumFramesPerSecond);
 }
 
 class $modify(MyCCApplication, CCApplication) {
