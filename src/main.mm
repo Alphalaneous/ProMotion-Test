@@ -53,7 +53,7 @@ static void setHighFrameRateReasons_h(
         count
     );
 
-    //setHighFrameRateReasons_o(self, sel, reasons, count);
+    setHighFrameRateReasons_o(self, sel, reinterpret_cast<const unsigned*>(0), count);
 }
 
 static void swizzleNSBundle() {
