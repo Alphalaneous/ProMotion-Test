@@ -115,6 +115,18 @@ $execute {
     swizzleNSBundle();
     swizzleCADynamicFrameRateSource();
     setupDisplayLink();
+
+    auto cls = objc_getClass("CADynamicFrameRateSource");
+
+    unsigned count = 0;
+    auto methods = class_copyMethodList(cls, &count);
+
+    for (unsigned i = 0; i < count; ++i) {
+        auto sel = method_getName(methods[i]);
+        log::info("CADynamicFrameRateSource: {}", sel_getName(sel));
+    }
+
+    free(methods);
 }
 
 class $modify(MyCCScheduler, CCScheduler) {
