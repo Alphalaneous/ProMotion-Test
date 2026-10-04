@@ -76,8 +76,8 @@ static void swizzleCADynamicFrameRateSource() {
     method_setImplementation(method2, (IMP)isPaused_h);
 
     auto method3 = class_getInstanceMethod(cls, @selector(setHighFrameRateReasons:count:));
-    setReasons_o =(void (*)(id, SEL, void*, NSUInteger))method_getImplementation(method);
-    method_setImplementation(method, (IMP)setReasons_h);
+    setHighFrameRateReasons_o =(void (*)(id, SEL, void*, NSUInteger))method_getImplementation(method);
+    method_setImplementation(method, (IMP)setHighFrameRateReasons_h);
 }
 
 static CADisplayLink* newLink = nullptr;
