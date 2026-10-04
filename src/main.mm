@@ -28,17 +28,13 @@ static void (*setPaused_o)(id, SEL, BOOL);
 static void setPaused_h(id self, SEL sel, BOOL paused) {
     log::info("CADynamicFrameRateSource setPaused({})", paused);
 
-    setPaused_o(self, sel, paused);
+    setPaused_o(self, sel, NO);
 }
 
 static BOOL (*isPaused_o)(id, SEL);
 
 static BOOL isPaused_h(id self, SEL sel) {
-    auto result = isPaused_o(self, sel);
-
-    log::info("CADynamicFrameRateSource isPaused() -> {}", result);
-
-    return result;
+    return NO;
 }
 
 static void swizzleNSBundle() {
