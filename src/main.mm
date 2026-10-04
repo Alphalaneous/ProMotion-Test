@@ -6,6 +6,7 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 #import <QuartzCore/QuartzCore.h>
+#import <UIKit/UIKit.h>
 
 using namespace geode::prelude;
 
