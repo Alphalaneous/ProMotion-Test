@@ -52,8 +52,15 @@ static void setupDisplayLink() {
 
     [oldLink invalidate];
 
-    auto newLink = [CADisplayLink displayLinkWithTarget:caller
-                                                selector:@selector(doCaller:)];
+    Class displayLinkClass = objc_getClass("CADisplayLink");
+
+    auto newLink = (CADisplayLink*)((id (*)(id, SEL, id, SEL))objc_msgSend)(
+        displayLinkClass,
+        @selector(displayLinkWithTarget:selector:),
+        caller,
+        @selector(doCaller:)
+    );
+    if (!newLink) return;
 
     if (@available(iOS 15.0, *)) {
         newLink.preferredFrameRateRange = CAFrameRateRange{
