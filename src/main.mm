@@ -33,7 +33,12 @@ $execute {
 
 static void setupDisplayLink() {
     auto caller = (CCDirectorCaller*)[CCDirectorCaller sharedDirectorCaller];
-    auto link = (CADisplayLink*)caller->displayLink;
+    Ivar ivar = class_getInstanceVariable(
+        [CCDirectorCaller class],
+        "displayLink"
+    );
+
+    auto link = (CADisplayLink*)object_getIvar(caller, ivar);
 
     if (!link) return;
 
