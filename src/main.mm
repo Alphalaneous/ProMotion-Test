@@ -54,6 +54,12 @@ static void setPreferredFrameRateRange_h(id self, SEL sel, CAFrameRateRange rang
     setPreferredFrameRateRange_o(self, sel, range);
 }
 
+static void (*CADisplayLink_setHighFrameRateReasons_o)(id, SEL, const unsigned*, unsigned long long);
+
+static void CADisplayLink_setHighFrameRateReasons_h(id self, SEL sel, const unsigned* reasons, unsigned long long count) {
+
+}
+
 static void swizzleNSBundle() {
     auto cls = [NSBundle class];
 
@@ -75,7 +81,7 @@ static void swizzleCADynamicFrameRateSource() {
 
     auto method3 = class_getInstanceMethod(cls, @selector(setHighFrameRateReasons:count:));
     setHighFrameRateReasons_o = (void (*)(id, SEL, const unsigned*, unsigned long long))method_getImplementation(method3);
-    method_setImplementation(method, (IMP)setHighFrameRateReasons_h);
+    method_setImplementation(method3, (IMP)setHighFrameRateReasons_h);
 
     auto method4 = class_getInstanceMethod(cls, @selector(setPreferredFrameRateRange:range:));
     setPreferredFrameRateRange_o = (void (*)(id, SEL, CAFrameRateRange))method_getImplementation(method4);
@@ -83,7 +89,11 @@ static void swizzleCADynamicFrameRateSource() {
 }
 
 static void swizzleCADisplayLink() {
+    auto cls = objc_getClass("CADisplayLink");
 
+    auto method = class_getInstanceMethod(cls, @selector(setHighFrameRateReasons:count:));
+    CADisplayLink_setHighFrameRateReasons_o = (void (*)(id, SEL, const unsigned*, unsigned long long))method_getImplementation(method);
+    method_setImplementation(method, (IMP)CADisplayLink_setHighFrameRateReasons_h);
 }
 
 static CADisplayLink* newLink = nullptr;
@@ -141,6 +151,7 @@ static void setupDisplayLink() {
 $execute {
     swizzleNSBundle();
     swizzleCADynamicFrameRateSource();
+    swizzleCADisplayLink();
     setupDisplayLink();
 
     auto cls = objc_getClass("CADynamicFrameRateSource");
