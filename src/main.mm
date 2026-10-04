@@ -5,6 +5,7 @@
 #include <Geode/modify/CCApplication.hpp>
 #include <Geode/modify/CCScheduler.hpp>
 #include <Geode/modify/CCDirector.hpp>
+#include <dlfcn.h>
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
