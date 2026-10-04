@@ -33,13 +33,8 @@ $execute {
 
 static void setupDisplayLink() {
     auto caller = (CCDirectorCaller*)[CCDirectorCaller sharedDirectorCaller];
-    Ivar ivar = class_getInstanceVariable(
-        [CCDirectorCaller class],
-        "displayLink"
-    );
+    auto link = (CADisplayLink*)caller->displayLink;
 
-    auto link = object_getIvar(caller, ivar);
-    
     if (!link) return;
 
     if (@available(iOS 15.0, *)) {
