@@ -227,6 +227,7 @@ $execute {
 class $modify(MyCCScheduler, CCScheduler) {
 
     void update(float dt) {
+        dt = 1 / 120.f;
         CCScheduler::update(dt);
         log::info("duration: {}, dt: {}", (float)newLink.duration, dt);
     }
