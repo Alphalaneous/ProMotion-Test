@@ -68,7 +68,18 @@ static void setPreferredFrameRateRange_h(id self, SEL sel, CAFrameRateRange rang
 static void (*CADisplayLink_setHighFrameRateReasons_o)(id, SEL, const unsigned*, unsigned long long);
 
 static void CADisplayLink_setHighFrameRateReasons_h(id self, SEL sel, const unsigned* reasons, unsigned long long count) {
+    log::info(
+        "CADisplayLink HFR reasons={}, count={}",
+        reinterpret_cast<uintptr_t>(reasons),
+        count
+    );
 
+    CADisplayLink_setHighFrameRateReasons_o(
+        self,
+        sel,
+        reasons,
+        count
+    );
 }
 
 static void swizzleNSBundle() {
