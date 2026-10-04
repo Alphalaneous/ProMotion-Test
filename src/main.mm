@@ -39,17 +39,17 @@ static BOOL isPaused_h(id self, SEL sel) {
     return NO;
 }
 
-static void (*setHighFrameRateReasons_o)(id, SEL, void*, NSUInteger);
+static void (*setHighFrameRateReasons_o)(id, SEL, const unsigned*, unsigned long long);
 
 static void setHighFrameRateReasons_h(
     id self,
     SEL sel,
-    void* reasons,
-    NSUInteger count
+    const unsigned* reasons,
+    unsigned long long count
 ) {
     log::info(
         "setHighFrameRateReasons reasons={} count={}",
-        reasons,
+        (const void*)reasons,
         count
     );
 
@@ -76,7 +76,7 @@ static void swizzleCADynamicFrameRateSource() {
     method_setImplementation(method2, (IMP)isPaused_h);
 
     auto method3 = class_getInstanceMethod(cls, @selector(setHighFrameRateReasons:count:));
-    setHighFrameRateReasons_o =(void (*)(id, SEL, void*, NSUInteger))method_getImplementation(method);
+    setHighFrameRateReasons_o =(void (*)(id, SEL, const unsigned*, unsigned long long))method_getImplementation(method);
     method_setImplementation(method, (IMP)setHighFrameRateReasons_h);
 }
 
