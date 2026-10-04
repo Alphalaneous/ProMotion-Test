@@ -28,9 +28,7 @@ static NSDictionary* infoDictionary_h(id self, SEL _cmd) {
 static void (*setPaused_o)(id, SEL, BOOL);
 
 static void setPaused_h(id self, SEL sel, BOOL paused) {
-    log::info("CADynamicFrameRateSource setPaused({})", paused);
 
-    setPaused_o(self, sel, NO);
 }
 
 static BOOL (*isPaused_o)(id, SEL);
