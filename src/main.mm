@@ -50,7 +50,7 @@ static void swizzleNSBundle() {
 }
 
 static void swizzleCADynamicFrameRateSource() {
-    auto cls = [CADynamicFrameRateSource class];
+    auto cls = objc_getClass("CADynamicFrameRateSource");
 
     auto method = class_getInstanceMethod(cls, @selector(setPaused:));
     setPaused_o = (void (*)(id, SEL, BOOL))method_getImplementation(method);
