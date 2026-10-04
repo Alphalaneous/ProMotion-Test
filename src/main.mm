@@ -16,8 +16,8 @@ using namespace geode::prelude;
 
 static NSDictionary* (*infoDictionary_o)(id, SEL);
 
-static NSDictionary* infoDictionary_h(id self, SEL _cmd) {
-    auto original = infoDictionary_o(self, _cmd);
+static NSDictionary* infoDictionary_h(id self, SEL sel) {
+    auto original = infoDictionary_o(self, sel);
 
     if (!original) return nil;
 
@@ -41,19 +41,17 @@ static BOOL isPaused_h(id self, SEL sel) {
 
 static void (*setHighFrameRateReasons_o)(id, SEL, const unsigned*, unsigned long long);
 
-static void setHighFrameRateReasons_h(
-    id self,
-    SEL sel,
-    const unsigned* reasons,
-    unsigned long long count
-) {
-    log::info(
-        "setHighFrameRateReasons reasons={} count={}",
-        (const void*)reasons,
-        count
-    );
+static void setHighFrameRateReasons_h(id self, SEL sel, const unsigned* reasons, unsigned long long count) {
 
-    setHighFrameRateReasons_o(self, sel, reinterpret_cast<const unsigned*>(0), count);
+}
+
+static void (*setPreferredFrameRateRange_o)(id, SEL, CAFrameRateRange range);
+
+static void setPreferredFrameRateRange_h(id self, SEL sel, CAFrameRateRange range) {
+    range.minimum = 120;
+    range.preferred = 120;
+    range.maximum = 120;
+    setPreferredFrameRateRange_o(self, sel, range);
 }
 
 static void swizzleNSBundle() {
@@ -76,8 +74,16 @@ static void swizzleCADynamicFrameRateSource() {
     method_setImplementation(method2, (IMP)isPaused_h);
 
     auto method3 = class_getInstanceMethod(cls, @selector(setHighFrameRateReasons:count:));
-    setHighFrameRateReasons_o =(void (*)(id, SEL, const unsigned*, unsigned long long))method_getImplementation(method);
+    setHighFrameRateReasons_o = (void (*)(id, SEL, const unsigned*, unsigned long long))method_getImplementation(method3);
     method_setImplementation(method, (IMP)setHighFrameRateReasons_h);
+
+    auto method4 = class_getInstanceMethod(cls, @selector(setPreferredFrameRateRange:range:));
+    setPreferredFrameRateRange_o = (void (*)(id, SEL, CAFrameRateRange))method_getImplementation(method4);
+    method_setImplementation(method4, (IMP)setPreferredFrameRateRange_h);
+}
+
+static void swizzleCADisplayLink() {
+
 }
 
 static CADisplayLink* newLink = nullptr;
