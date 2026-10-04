@@ -1,3 +1,4 @@
+#include "Geode/loader/Log.hpp"
 #include <Geode/Geode.hpp>
 #include <Geode/modify/CCApplication.hpp>
 
@@ -17,6 +18,8 @@ static NSDictionary* infoDictionary_h(id self, SEL _cmd) {
 
     auto dict = [original mutableCopy];
     dict[@"CADisableMinimumFrameDurationOnPhone"] = @YES;
+
+    log::info("replaced dict");
 
     return dict;
 }
@@ -49,8 +52,10 @@ static void setupDisplayLink() {
     if (!link) return;
 
     if (@available(iOS 15.0, *)) {
+        log::info("set range");
+
         link.preferredFrameRateRange = CAFrameRateRange{
-            .minimum = 120.0,
+            .minimum = 60.0,
             .maximum = 120.0,
             .preferred = 120.0,
         };
