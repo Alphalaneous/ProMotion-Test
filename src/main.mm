@@ -1,3 +1,4 @@
+#include "Geode/cocos/CCDirector.h"
 #include "Geode/cocos/CCScheduler.h"
 #include "Geode/loader/Log.hpp"
 #include <Geode/Geode.hpp>
@@ -113,6 +114,8 @@ $execute {
     swizzleNSBundle();
     swizzleCADynamicFrameRateSource();
     setupDisplayLink();
+
+    CCDirector::get()->setAnimationInterval(1.f/120.f);
 }
 
 class $modify(MyCCScheduler, CCScheduler) {
