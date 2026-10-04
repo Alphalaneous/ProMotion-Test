@@ -84,27 +84,27 @@ static void CADisplayLink_setHighFrameRateReasons_h(id self, SEL sel, const unsi
 
 
 static double deadline() {
-    
+    void* handle = dlopen("/System/Library/Frameworks/QuartzCore.framework/QuartzCore", RTLD_LAZY);
+
+    auto currentMediaTime = reinterpret_cast<double (*)()>(dlsym(handle, "CACurrentMediaTime"));
+
+    double vsyncInterval = 1.0 / 120.0;
+    double now = currentMediaTime();
+    double nextVsync = ceil(now / vsyncInterval) * vsyncInterval;
+
+    return nextVsync;
 }
 
 static double (*commitDeadline_o)(id, SEL);
 
 static double commitDeadline_h(id self, SEL sel) {
-    double vsyncInterval = 1.0 / 120.0;
-    double now = CACurrentMediaTime();
-    double nextVsync = ceil(now / vsyncInterval) * vsyncInterval;
-    
-    return nextVsync;
+    return deadline();
 }
 
 static double (*commitDeadlineAfterTimestamp_o)(id, SEL, double arg1);
 
 static double commitDeadlineAfterTimestamp_h(id self, SEL sel, double arg1) {
-    double vsyncInterval = 1.0 / 120.0;
-    double now = CACurrentMediaTime();
-    double nextVsync = ceil(now / vsyncInterval) * vsyncInterval;
-    
-    return nextVsync;
+    return deadline();
 }
 
 
