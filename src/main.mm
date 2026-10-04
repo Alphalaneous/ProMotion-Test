@@ -47,15 +47,30 @@ static void setupDisplayLink() {
     Ivar ivar = class_getInstanceVariable(cls, "displayLink");
     if (!ivar) return;
 
-    auto link = (CADisplayLink*)object_getIvar(caller, ivar);
-    if (!link) return;
+    auto oldLink = (CADisplayLink*)object_getIvar(caller, ivar);
+    if (!oldLink) return;
 
-    link.preferredFramesPerSecond = 120;
-    link.preferredFrameRateRange = CAFrameRateRange{
-        .minimum = 120.0,
-        .maximum = 120.0,
-        .preferred = 120.0,
-    };
+    [oldLink invalidate];
+
+    auto newLink = [CADisplayLink displayLinkWithTarget:caller
+                                                selector:@selector(doCaller:)];
+
+    if (@available(iOS 15.0, *)) {
+        newLink.preferredFrameRateRange = CAFrameRateRange{
+            .minimum = 120.0,
+            .maximum = 120.0,
+            .preferred = 120.0,
+        };
+    }
+
+    if (@available(iOS 10.0, *)) {
+        newLink.preferredFramesPerSecond = 120;
+    }
+
+    [newLink addToRunLoop:[NSRunLoop currentRunLoop]
+                  forMode:NSRunLoopCommonModes];
+
+    object_setIvar(caller, ivar, newLink);
 
     log::info("duration: {}, refresh rate: {}", (float)link.duration, (long)[UIScreen mainScreen].maximumFramesPerSecond);
 }
