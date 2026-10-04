@@ -57,11 +57,6 @@ static void swizzleCADynamicFrameRateSource() {
     method_setImplementation(method2, (IMP)isPaused_h);
 }
 
-$execute {
-    swizzleNSBundle();
-    swizzleCADynamicFrameRateSource();
-}
-
 static void setupDisplayLink() {
     Class cls = objc_getClass("CCDirectorCaller");
     if (!cls) return;
@@ -111,15 +106,14 @@ static void setupDisplayLink() {
     log::info("duration: {}, refresh rate: {}", (float)newLink.duration, (long)[UIScreen mainScreen].maximumFramesPerSecond);
 }
 
+
+$execute {
+    swizzleNSBundle();
+    swizzleCADynamicFrameRateSource();
+    setupDisplayLink();
+}
+
 class $modify(MyCCApplication, CCApplication) {
-
-    int run() {
-        queueInMainThread([] {
-            setupDisplayLink();
-        });
-
-        return CCApplication::run();
-    }
 
     void setAnimationInterval(double interval) {
         CCApplication::setAnimationInterval(interval);
