@@ -1,9 +1,9 @@
 #include <Geode/Geode.hpp>
-#include <Geode/cocos/platform/ios/CCDirectorCaller.h>
 #include <Geode/modify/CCApplication.hpp>
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
+#import <objc/message.h>
 #import <QuartzCore/QuartzCore.h>
 
 using namespace geode::prelude;
@@ -32,18 +32,28 @@ $execute {
 }
 
 static void setupDisplayLink() {
-    auto caller = (CCDirectorCaller*)[CCDirectorCaller sharedDirectorCaller];
-    Ivar ivar = class_getInstanceVariable(
-        [CCDirectorCaller class],
-        "displayLink"
+    Class cls = objc_getClass("CCDirectorCaller");
+    if (!cls) return;
+
+    id caller = ((id (*)(id, SEL))objc_msgSend)(
+        cls,
+        @selector(sharedDirectorCaller)
     );
 
-    auto link = (CADisplayLink*)object_getIvar(caller, ivar);
+    if (!caller) return;
 
+    Ivar ivar = class_getInstanceVariable(cls, "displayLink");
+    if (!ivar) return;
+
+    auto link = (CADisplayLink*)object_getIvar(caller, ivar);
     if (!link) return;
 
     if (@available(iOS 15.0, *)) {
-        link.preferredFrameRateRange = CAFrameRateRangeMake(120.0, 120.0, 120.0);
+        link.preferredFrameRateRange = CAFrameRateRange{
+            .minimum = 120.0,
+            .maximum = 120.0,
+            .preferred = 120.0,
+        };
     }
 }
 
