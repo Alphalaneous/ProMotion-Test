@@ -23,14 +23,47 @@ static NSDictionary* infoDictionary_h(id self, SEL _cmd) {
     return dict;
 }
 
-$execute {
+static void (*setPaused_o)(id, SEL, BOOL);
+
+static void setPaused_h(id self, SEL sel, BOOL paused) {
+    log::info("CADynamicFrameRateSource setPaused({})", paused);
+
+    setPaused_o(self, sel, paused);
+}
+
+static BOOL (*isPaused_o)(id, SEL);
+
+static BOOL isPaused_h(id self, SEL sel) {
+    auto result = isPaused_o(self, sel);
+
+    log::info("CADynamicFrameRateSource isPaused() -> {}", result);
+
+    return result;
+}
+
+static void swizzleNSBundle() {
     auto cls = [NSBundle class];
-    auto sel = @selector(infoDictionary);
-    auto method = class_getInstanceMethod(cls, sel);
 
+    auto method = class_getInstanceMethod(cls, @selector(infoDictionary));
     infoDictionary_o = (NSDictionary* (*)(id, SEL))method_getImplementation(method);
-
     method_setImplementation(method, (IMP)infoDictionary_h);
+}
+
+static void swizzleCADynamicFrameRateSource() {
+    auto cls = [CADynamicFrameRateSource class];
+
+    auto method = class_getInstanceMethod(cls, @selector(setPaused:));
+    setPaused_o = (void (*)(id, SEL, BOOL))method_getImplementation(method);
+    method_setImplementation(method, (IMP)setPaused_h);
+
+    auto method2 = class_getInstanceMethod(cls, @selector(isPaused));
+    isPaused_o = (BOOL (*)(id, SEL))method_getImplementation(method2);
+    method_setImplementation(method2, (IMP)isPaused_h);
+}
+
+$execute {
+    swizzleNSBundle();
+    swizzleCADynamicFrameRateSource();
 }
 
 static void setupDisplayLink() {
