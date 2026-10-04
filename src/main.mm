@@ -42,7 +42,18 @@ static BOOL isPaused_h(id self, SEL sel) {
 static void (*setHighFrameRateReasons_o)(id, SEL, const unsigned*, unsigned long long);
 
 static void setHighFrameRateReasons_h(id self, SEL sel, const unsigned* reasons, unsigned long long count) {
+    log::info(
+        "HFR reasons={}, count={}",
+        reinterpret_cast<uintptr_t>(reasons),
+        count
+    );
 
+    setHighFrameRateReasons_o(
+        self,
+        sel,
+        reasons,
+        count
+    );
 }
 
 static void (*setPreferredFrameRateRange_o)(id, SEL, CAFrameRateRange range);
