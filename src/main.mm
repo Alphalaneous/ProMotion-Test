@@ -82,6 +82,32 @@ static void CADisplayLink_setHighFrameRateReasons_h(id self, SEL sel, const unsi
     );
 }
 
+
+static double deadline() {
+    
+}
+
+static double (*commitDeadline_o)(id, SEL);
+
+static double commitDeadline_h(id self, SEL sel) {
+    double vsyncInterval = 1.0 / 120.0;
+    double now = CACurrentMediaTime();
+    double nextVsync = ceil(now / vsyncInterval) * vsyncInterval;
+    
+    return nextVsync;
+}
+
+static double (*commitDeadlineAfterTimestamp_o)(id, SEL, double arg1);
+
+static double commitDeadlineAfterTimestamp_h(id self, SEL sel, double arg1) {
+    double vsyncInterval = 1.0 / 120.0;
+    double now = CACurrentMediaTime();
+    double nextVsync = ceil(now / vsyncInterval) * vsyncInterval;
+    
+    return nextVsync;
+}
+
+
 static void swizzleNSBundle() {
     auto cls = [NSBundle class];
 
@@ -108,6 +134,14 @@ static void swizzleCADynamicFrameRateSource() {
     auto method4 = class_getInstanceMethod(cls, @selector(setPreferredFrameRateRange:range:));
     setPreferredFrameRateRange_o = (void (*)(id, SEL, CAFrameRateRange))method_getImplementation(method4);
     method_setImplementation(method4, (IMP)setPreferredFrameRateRange_h);
+
+    auto method5 = class_getInstanceMethod(cls, @selector(commitDeadline));
+    commitDeadline_o = (double (*)(id, SEL))method_getImplementation(method5);
+    method_setImplementation(method5, (IMP)commitDeadline_h);
+
+    auto method6 = class_getInstanceMethod(cls, @selector(commitDeadlineAfterTimestamp));
+    commitDeadlineAfterTimestamp_o = (double (*)(id, SEL, double))method_getImplementation(method6);
+    method_setImplementation(method6, (IMP)commitDeadlineAfterTimestamp_h);
 }
 
 static void swizzleCADisplayLink() {
