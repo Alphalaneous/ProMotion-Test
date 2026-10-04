@@ -1,6 +1,8 @@
+#include "Geode/cocos/CCScheduler.h"
 #include "Geode/loader/Log.hpp"
 #include <Geode/Geode.hpp>
 #include <Geode/modify/CCApplication.hpp>
+#include <Geode/modify/CCScheduler.hpp>
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
@@ -57,6 +59,8 @@ static void swizzleCADynamicFrameRateSource() {
     method_setImplementation(method2, (IMP)isPaused_h);
 }
 
+static CADisplayLink* newLink = nullptr;
+
 static void setupDisplayLink() {
     Class cls = objc_getClass("CCDirectorCaller");
     if (!cls) return;
@@ -78,7 +82,7 @@ static void setupDisplayLink() {
 
     Class displayLinkClass = objc_getClass("CADisplayLink");
 
-    auto newLink = (CADisplayLink*)((id (*)(id, SEL, id, SEL))objc_msgSend)(
+    newLink = (CADisplayLink*)((id (*)(id, SEL, id, SEL))objc_msgSend)(
         displayLinkClass,
         @selector(displayLinkWithTarget:selector:),
         caller,
@@ -103,7 +107,7 @@ static void setupDisplayLink() {
     [newLink addToRunLoop:[NSRunLoop currentRunLoop]
                   forMode:NSRunLoopCommonModes];
 
-    log::info("duration: {}, refresh rate: {}", (float)newLink.duration, (long)[UIScreen mainScreen].maximumFramesPerSecond);
+    log::info("duration: {}", (float)newLink.duration);
 }
 
 
@@ -113,7 +117,24 @@ $execute {
     setupDisplayLink();
 }
 
+class $modify(MyCCScheduler, CCScheduler) {
+
+    void update(float dt) {
+        CCScheduler::update(dt);
+        log::info("duration: {}, dt: {}", (float)newLink.duration, dt);
+    }
+
+};
+
 class $modify(MyCCApplication, CCApplication) {
+
+    int run() {
+        queueInMainThread([] {
+            setupDisplayLink();
+        });
+
+        return CCApplication::run();
+    }
 
     void setAnimationInterval(double interval) {
         CCApplication::setAnimationInterval(interval);
