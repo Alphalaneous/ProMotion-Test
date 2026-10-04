@@ -4,6 +4,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/CCApplication.hpp>
 #include <Geode/modify/CCScheduler.hpp>
+#include <Geode/modify/CCDirector.hpp>
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
@@ -114,8 +115,6 @@ $execute {
     swizzleNSBundle();
     swizzleCADynamicFrameRateSource();
     setupDisplayLink();
-
-    CCDirector::get()->setAnimationInterval(1.f/120.f);
 }
 
 class $modify(MyCCScheduler, CCScheduler) {
@@ -125,6 +124,14 @@ class $modify(MyCCScheduler, CCScheduler) {
         log::info("duration: {}, dt: {}", (float)newLink.duration, dt);
     }
 
+};
+
+class $modify(MyCCDirector, CCDirector) {
+    bool init() {
+        if (!CCDirector::init()) return false;
+        setAnimationInterval(1.f/120.f);
+        return true;
+    }
 };
 
 class $modify(MyCCApplication, CCApplication) {
