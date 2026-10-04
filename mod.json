@@ -1,0 +1,15 @@
+{
+	"geode": "5.10.1",
+	"gd": {
+		"ios": "2.2081"
+	},
+	"id": "alphalaneous.promotion",
+	"name": "ProMotion",
+	"version": "v1.0.0",
+	"developer": "Alphalaneous",
+	"description": "",
+	"dependencies": {
+		"geode.node-ids": ">=v1.23.3"
+	},
+	"early-load": true
+}
